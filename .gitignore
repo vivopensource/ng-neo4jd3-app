@@ -157,3 +157,5 @@ git.ignore/
 *.bat
 /.project
 /.settings
+
+yarn.lock
