@@ -45,5 +45,5 @@ export class NgNeo4jD3Data {
     // Neo4j Data
     neo4jData: NgNeo4jD3Data;
     neo4jDataUrl: string = undefined;
-    graphContainerHeight: string = '300px';
+    graphContainerHeight: string = '100%';
   }

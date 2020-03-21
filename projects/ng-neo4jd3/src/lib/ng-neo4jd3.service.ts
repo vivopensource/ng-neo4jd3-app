@@ -167,7 +167,7 @@ export class NgNeo4jd3Service {
       var thisObj : NgNeo4jd3Service = this;
       var svg = container.append('svg')
                  .attr('width', '100%')
-                 .attr('height', '100%')
+                 .attr('height', thisObj.options.graphContainerHeight)
                  .attr('class', 'neo4jd3-graph')
                  .call(d3.zoom().on('zoom', function() {
                      var scale = d3.event.transform.k,
@@ -949,7 +949,7 @@ export class NgNeo4jd3Service {
       onNodeMouseLeave: undefined,
       onNodeDragEnd: undefined,
       onNodeDragStart: undefined,
-      graphContainerHeight: '300px'
+      graphContainerHeight: '100%'
     };
   }
 
@@ -1032,7 +1032,8 @@ export class NgNeo4jd3Service {
   }
 
   public version() {
-    return "1.0.0";
+    return "0.1.6";
   }
+
 }
 
