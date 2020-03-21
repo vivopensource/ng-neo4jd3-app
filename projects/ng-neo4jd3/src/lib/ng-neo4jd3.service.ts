@@ -63,7 +63,8 @@ export class NgNeo4jd3Service {
       onNodeMouseLeave: undefined,
       onRelationshipDoubleClick: undefined,
       onNodeDragEnd: undefined,
-      onNodeDragStart: undefined
+      onNodeDragStart: undefined,
+      graphContainerHeight: '300px'
   };
 
 
@@ -947,7 +948,8 @@ export class NgNeo4jd3Service {
       onNodeMouseEnter: undefined,
       onNodeMouseLeave: undefined,
       onNodeDragEnd: undefined,
-      onNodeDragStart: undefined
+      onNodeDragStart: undefined,
+      graphContainerHeight: '300px'
     };
   }
 
