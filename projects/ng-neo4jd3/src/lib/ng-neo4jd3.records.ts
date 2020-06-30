@@ -276,7 +276,19 @@ export const Neo4jD3Records : NgNeo4jD3Data = {
                                 "type": "HAS_EMAIL",
                                 "startNode": "1",
                                 "endNode": "14",
-                                "properties": {}
+                                "properties": {
+                                    "test1":"prop1-1",
+                                    "test2":"prop2",
+                                }
+                            }, {
+                                "id": "130",
+                                "type": "ADDITIONAL_EMAIL",
+                                "startNode": "1",
+                                "endNode": "14",
+                                "properties": {
+                                    "test1":"prop1-2",
+                                    "test3":"prop3",
+                                }
                             }, {
                                 "id": "14",
                                 "type": "USED_CREDIT_CARD",

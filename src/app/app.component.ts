@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     let options: NgNeo4jD3Options = this.ngNeo4jD3Service.getOptionsPresentation();
+    options.graphContainerHeight = '600px';
     this.ngNeo4jD3Service.setValues('#neo4jd3', options);
     this.ngNeo4jD3Service.init();
   }

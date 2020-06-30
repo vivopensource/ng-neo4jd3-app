@@ -36,8 +36,6 @@ export class NgNeo4jd3Service {
   private numClasses = 0;
   private svgScale = undefined;
 
-  private label;
-
   private optionsInput : Object;
 
   private options : NgNeo4jD3Options = {
@@ -64,7 +62,7 @@ export class NgNeo4jd3Service {
       onRelationshipDoubleClick: undefined,
       onNodeDragEnd: undefined,
       onNodeDragStart: undefined,
-      graphContainerHeight: '300px'
+      graphContainerHeight: '100%'
   };
 
 
@@ -95,6 +93,10 @@ export class NgNeo4jd3Service {
     this.initIconMap(this.options);
 
     this.mergeProperty(this.options, this.optionsInput);
+
+    if (this.options.neo4jData) {
+      this.mergeRelationshipWithSameNodes();
+    }
 
     if (this.options.icons) {
         this.options.showIcons = true;
@@ -1033,6 +1035,115 @@ export class NgNeo4jd3Service {
 
   public version() {
     return "0.1.6";
+  }
+
+
+
+
+  // Merges All Relationships with the same nodes
+  private mergeRelationshipWithSameNodes() {
+    let r = this.options.neo4jData.results[0].data[0].graph.relationships;
+    // Check the relationship counts between 2 nodes
+    var drawnRelationship = {};
+
+    for (let rIndex=0; rIndex<r.length; rIndex++) {
+      let rel = r[rIndex];
+      const startNode = rel['startNode'];
+      const endNode = rel['endNode'];
+      const relationshipKey = startNode + '-' + endNode;
+      let relationshipValue = drawnRelationship[relationshipKey];
+      rel['id'] = rel['id'].toString();
+      if (relationshipValue != undefined) {
+        if ( relationshipKey == '1161-1148' ) {
+          console.log(JSON.stringify(rel));
+        }
+        let relationshipModified = {};
+        const obj = relationshipValue;
+        // 
+        const keys = this.mergeKeys(obj, rel);
+        keys.forEach(key => {
+          const newVal = this.assignAttributes(key, obj, rel);
+          if (newVal != undefined) {
+              relationshipModified[key] = this.assignAttributes(key, obj, rel);
+          }
+        });
+        drawnRelationship[relationshipKey] = relationshipModified;
+      } else {
+        drawnRelationship[relationshipKey] = rel;
+      }
+    }
+
+    const newRel = Object.values(drawnRelationship);
+    this.options.neo4jData.results[0].data[0].graph.relationships = newRel;
+
+  }
+
+  private mergeKeys(obj1, obj2) {
+    let keys = Object.keys(obj1);
+    keys = keys.concat(Object.keys(obj2));
+    return [...new Set(keys)];
+  }
+
+  private assignAttributes(key, relationship1, relationship2) {
+    if (key === 'properties') {
+        const prop1 = relationship1.properties;
+        const prop2 = relationship2.properties;
+        if (prop1 == undefined && prop2 == undefined) {
+          return {};
+        } else if (prop1 == undefined) {
+          return prop2;
+        } else if (prop2 == undefined) {
+          return prop1;
+        }
+        const keys = this.mergeKeys(prop1, prop2);
+        let prop = {};
+        keys.forEach(key => {
+          prop[key] = this.assignAttributesValue(key, prop1, prop2);
+        });
+        return prop;
+    } else if (key == 'target' || key == 'linknum' || key == 'startNode' || key == 'endNode') {
+      return relationship1[key];
+    }
+    return this.assignAttributesValue(key, relationship1, relationship2);
+  }
+
+  private assignAttributesValue(key, relationship1, relationship2) {
+    let val1 = relationship1[key];
+    let val2 = relationship2[key];
+    if (val1 != undefined || val2 != undefined) {
+      if (val1 == undefined) {
+          return val2;
+      } else if (val2 == undefined) {
+          return val1;
+      } else {
+        if (val1 instanceof Array || val2 instanceof Array) {
+          if (!(val1 instanceof Array)) {
+              val2.push(val1);
+              return val2;
+          } else if (!(val2 instanceof Array)) {
+              val1.push(val2);
+              return val1;
+          }
+          return val1.concat(val2);
+        } else if (val1 instanceof Object || val2 instanceof Object) {
+          if (!(val1 instanceof Object)) {
+            val2.custom_key_assigned = val1;
+            return val2;
+          } else if (!(val2 instanceof Object)) {
+            val1.custom_key_assigned = val2;
+            return val1;
+          }
+          const keys = this.mergeKeys(val1, val2);
+          let obj = {};
+          keys.forEach(key => {
+            obj[key] = this.assignAttributesValue(key, val1, val2);
+          });
+          return obj;
+        }
+        return val1 + ', ' + val2;
+      }
+    }
+    return undefined;
   }
 
 }
